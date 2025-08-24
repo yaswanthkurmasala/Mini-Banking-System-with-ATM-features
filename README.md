@@ -1,77 +1,152 @@
-# Mini-Banking-System-with-ATM-features
+# 🏦 Mini Banking System (Java + MySQL)
 
-# 🏦 Banking System (Java + MySQL)
-
-## 📌 Overview
-This project is a **simple Banking System** built using **Java (JDBC)** and **MySQL**.  
-It allows users to perform basic banking operations like **creating accounts, depositing money, withdrawing money, and checking balances**.  
-This project is perfect for **freshers** to showcase **Java + MySQL skills** in interviews and placements.  
+A **console-based banking application** built with **Java** and **MySQL**.  
+This project simulates a real-world banking system with secure **PIN authentication**,  
+**account management**, and **transaction features**.
 
 ---
 
-## ⚙️ Features
-- ✅ Create a new bank account  
-- ✅ Deposit money into an account  
-- ✅ Withdraw money from an account  
-- ✅ Check account balance  
-- ✅ JDBC + MySQL integration  
+## ✨ Features
+
+- 🔐 **Secure Account Creation**
+  - Generates a unique 10-digit Account Number.
+  - PIN is stored as **SHA-256 hash** with random **salt** for security.
+- ✅ **Login with Account Locking**
+  - 3 wrong PIN attempts → account locked.
+- 💰 **Banking Operations**
+  - Deposit money.
+  - Withdraw money (with insufficient balance check).
+  - Transfer between accounts.
+  - Check balance anytime.
+- 📜 **Transaction History**
+  - View last 10 transactions with timestamp.
+- 🛡️ **Safe Transactions**
+  - Uses MySQL transactions (`COMMIT` / `ROLLBACK`) to prevent inconsistent states.
 
 ---
 
-## 🛠️ Technologies Used
-- **Java** (Core Java, JDBC)  
-- **MySQL** (Database)  
-- **MySQL Connector/J** (JDBC Driver)  
+## 🗂️ Project Structure
+
+📂 src/
+
+└── BankApp.java # Main Java Application
+
+📂 lib/
+
+└── mysql-connector-j-9.4.0.jar # MySQL JDBC Driver
+
+.vscode/
+
+├── settings.json # Library reference config
+
+└── launch.json # VS Code run config
+
 
 ---
 
-## 📂 Project Structure
-BankingSystem/
-│── lib/
-│ └── mysql-connector-j-9.4.0.jar
-│── src/
-│ └── BankApp.java
-│── README.md
+## 🛠️ Tech Stack
 
+- **Java 17+**
+- **MySQL 8+**
+- **JDBC (MySQL Connector/J)**
+- **VS Code** (with Java Extension Pack)
 
 ---
 
 ## 🗄️ Database Setup
-1. Open **MySQL Command Line / Workbench**  
-2. Create database:
-   ```sql
+
+Run the following SQL in MySQL:
+
+```sql
    CREATE DATABASE bankdb;
    USE bankdb;
-
+   
    CREATE TABLE accounts (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100),
-    balance DOUBLE
-);
+       account_no VARCHAR(20) PRIMARY KEY,
+       name VARCHAR(100) NOT NULL,
+       pin_hash VARCHAR(256) NOT NULL,
+       salt VARCHAR(100) NOT NULL,
+       balance DECIMAL(15,2) DEFAULT 0.00,
+       failed_attempts INT DEFAULT 0,
+       is_locked BOOLEAN DEFAULT FALSE
+   );
+   
+   CREATE TABLE transactions (
+       id INT AUTO_INCREMENT PRIMARY KEY,
+       account_no VARCHAR(20),
+       type VARCHAR(20),
+       amount DECIMAL(15,2),
+       balance_after DECIMAL(15,2),
+       related_account VARCHAR(20),
+       note VARCHAR(200),
+       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+```
 
-🚀 How to Run
-1. Compile the project
-   javac -cp ".;lib/mysql-connector-j-9.4.0.jar" src/BankApp.java -d .
+---
 
-2. Run the project
-   java -cp ".;lib/mysql-connector-j-9.4.0.jar;." src.BankApp
+## ▶️ How to Run
 
-🧑‍💻 Example Workflow
+1. Clone the project:
 
-1. Create Account → Enter Name, Deposit Initial Balance  
-2. Deposit Money → Add funds to existing account  
-3. Withdraw Money → Deduct funds if balance is available  
-4. Check Balance → View account balance
+         git clone https://github.com/<your-username>/BankApp.git
+         cd BankApp
 
 
-📌 Future Enhancements
+2. Place the MySQL Connector JAR in src/lib/
+   Example: src/lib/mysql-connector-j-9.4.0.jar
 
-🔑 Add Login/Authentication
+3. Update DB credentials in BankApp.java:
 
-📜 Transaction History
-
-🌐 Build GUI with JavaFX / Swing
-
-☁️ Deploy with cloud database
+         static final String URL  = "jdbc:mysql://localhost:3306/bankdb";
+         static final String USER = "root";
+         static final String PASS = "your-password"; 
 
 
+4. Compile and run:
+
+         javac -cp "src/lib/mysql-connector-j-9.4.0.jar;." src/BankApp.java
+         java -cp "src/lib/mysql-connector-j-9.4.0.jar;." src.BankApp
+
+---
+
+## 📖 Sample Flow
+
+      ==== Mini Banking System ====
+      1) Register
+      2) Login
+      0) Exit
+      Choose: 1
+      
+      Enter your Name: Yaswanth
+      Set a 4-digit PIN: 1234
+      ✅ Account created successfully!
+      Your Account No: 1002345678
+      
+      --- After Login ---
+      1) Balance
+      2) Deposit
+      3) Withdraw
+      4) Transfer
+      5) Last 10 Transactions
+      9) Logout
+
+---
+
+## 📌 Notes
+
+   - Change DB credentials (USER, PASS) before running.
+   
+   - Account locks after 3 failed login attempts.
+   
+   - Use transaction-safe operations to avoid data corruption.
+
+## 🎯 Future Enhancements
+
+   - Add Interest Calculation.
+
+   - Implement Admin Panel for managing accounts.
+   
+   - Build a GUI (Swing/JavaFX) for better UI.
+   
+   - Deploy as a Spring Boot REST API.
